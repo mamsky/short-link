@@ -1,0 +1,10 @@
+# File environment
+.env
+
+# Folder temporary
+/tmp/
+/tmp/*
+
+# File executable
+*.exe
+*.out
