@@ -8,6 +8,7 @@ import (
 	"short-link/model"
 	"short-link/service"
 	"short-link/utils"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -42,7 +43,7 @@ func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = service.CreateLink(fieldData)
-		
+
 		if err != nil {
 			http.Error(w, "Failed to save URL", http.StatusInternalServerError)
 			return
@@ -56,5 +57,15 @@ func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleRedirect(w http.ResponseWriter, r *http.Request){
+	if r.Method == http.MethodGet{
+		code := strings.TrimPrefix(r.URL.Path, "/")
 
+		err, url := service.FindByCode(code)
+		if err != nil {
+			http.Error(w, "Short link not found", http.StatusNotFound)
+			return
+		}
+		
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
+	}
 }

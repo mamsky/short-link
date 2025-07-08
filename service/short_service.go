@@ -1,6 +1,8 @@
 package service
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"short-link/model"
 	"short-link/repository"
@@ -18,6 +20,17 @@ func CreateLink(d *model.ShortLink) error {
 	return nil
 }
 
-func FindByID() {
+func FindByCode(code string) ( error,string) {
+	var url string
+	fmt.Println(url, code)
+	query := `SELECT url FROM short_link WHERE short_url = $1`
 
+	err := repository.DB.QueryRow(query, code).Scan(&url)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return  fmt.Errorf("short code not found"),""
+		}
+		return  err,""
+	}
+	return  nil ,url
 }
