@@ -6,5 +6,5 @@ import (
 )
 
 func ShortRoutes() {
-	http.HandleFunc("/", handler.HandleLongUrl)
+	http.HandleFunc("/shorten", handler.HandleLongUrl)
 }

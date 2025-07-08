@@ -10,6 +10,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+
+var DB *sql.DB
+
 func ConnectDB() {
 	err := godotenv.Load()
 	if err != nil {
@@ -18,18 +21,15 @@ func ConnectDB() {
 
 	dbUrl := os.Getenv("DATABASE_URL")
 
-	db, err := sql.Open("postgres", dbUrl)
+	DB, err = sql.Open("postgres", dbUrl)
 	if err != nil{
 		log.Fatal("Error opening database:", err)
 	}
 
-	defer db.Close()
-
-	err = db.Ping()
+	err = DB.Ping()
 	if err != nil {
 		log.Fatal("Cannot connect to DB:", err)
 	}
 
 	fmt.Println("✅ Connected to DB successfully!")
-
 }
