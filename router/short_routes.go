@@ -5,7 +5,9 @@ import (
 	"short-link/handler"
 )
 
-func ShortRoutes() {
-	http.HandleFunc("/shorten", handler.HandleLongUrl)
-	http.HandleFunc("/", handler.HandleRedirect)
+func ShortRoutes() http.Handler{
+	mux := http.NewServeMux();
+	mux.HandleFunc("/shorten", handler.HandleLongUrl)
+	mux.HandleFunc("/", handler.HandleRedirect)
+	return mux
 }
