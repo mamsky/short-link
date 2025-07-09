@@ -11,8 +11,6 @@ import (
 	"short-link/service"
 	"short-link/utils"
 	"strings"
-
-	"github.com/joho/godotenv"
 )
 
 func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
@@ -34,17 +32,10 @@ func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
 			URL: url.URL,
 			ShortURL: urlCode,
 		}
-		
-		
-		err = godotenv.Load()
-		if err != nil{
-			fmt.Println("Error loading .env file", err)
-			return
-		}
 
 		baseUrl := os.Getenv("BASE_URL")
 		fieldUrl := baseUrl + urlCode
-		
+
 		err = service.CreateLink(fieldData)
 
 		if err != nil {
