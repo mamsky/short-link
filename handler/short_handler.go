@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"short-link/model"
@@ -15,9 +17,13 @@ import (
 
 func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost{
+		body, _ := io.ReadAll(r.Body)
+		fmt.Println("RAW Request body:", string(body)) // 👈 log isi body
+		r.Body = io.NopCloser(bytes.NewBuffer(body)) // reset body
 		var url model.ShortLink
 		err := json.NewDecoder(r.Body).Decode(&url)
 		if err != nil{
+			fmt.Println("Decode error:", err) // 👈 log error detail
 			http.Error(w, "Invalid Request Body", http.StatusBadRequest)
 			return;
 		}
@@ -38,10 +44,7 @@ func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
 
 		baseUrl := os.Getenv("BASE_URL")
 		fieldUrl := baseUrl + urlCode
-		response :=map[string]interface{}{
-			"url": fieldUrl,
-		}
-
+		
 		err = service.CreateLink(fieldData)
 
 		if err != nil {
@@ -49,10 +52,10 @@ func HandleLongUrl(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "ok",
+			"url":fieldUrl,
+		})
 	}
 }
 
